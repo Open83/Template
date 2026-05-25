@@ -3,87 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Mobility | Next-Gen Car Rental</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+    <title>Elite Drive | Premium Vehicle Leasing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-deep: #0B0C10;
-            --surface-dark: rgba(31, 40, 51, 0.6);
-            --accent-cyan: #66FCF1;
-            --accent-cyan-dim: rgba(102, 252, 241, 0.2);
-            --text-main: #C5C6C7;
-            --text-light: #FFFFFF;
+            --bg-base: #050505;
+            --surface: rgba(20, 20, 22, 0.7);
+            --border-glow: rgba(100, 255, 218, 0.3);
+            --accent: #64FFDA;
+            --text-primary: #EAEAEA;
+            --text-secondary: #8892B0;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Manrope', sans-serif;
         }
 
         body {
-            background-color: var(--bg-deep);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-primary);
             overflow-x: hidden;
         }
 
-        h1, h2, h3 {
-            font-family: 'Syncopate', sans-serif;
-            color: var(--text-light);
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        h1, h2, h3, .brand {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1.5px;
         }
 
-        /* Hero Section with Particle Canvas */
-        .hero {
-            position: relative;
-            min-height: 100vh;
+        /* Navigation */
+        nav {
             display: flex;
+            justify-content: space-between;
+            padding: 2rem 5%;
+            position: absolute;
+            width: 100%;
+            z-index: 10;
+        }
+
+        .brand {
+            font-size: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .brand span { color: var(--accent); }
+
+        .nav-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            margin-left: 2rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover { color: var(--accent); }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            background: radial-gradient(circle at center, #111 0%, #000 100%);
+            display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
-            overflow: hidden;
-        }
-
-        #particle-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-        }
-
-        /* Glassmorphism Booking Console */
-        .booking-console {
             position: relative;
-            z-index: 1;
-            background: var(--surface-dark);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--accent-cyan-dim);
-            border-radius: 16px;
-            padding: 3rem;
-            width: 100%;
-            max-width: 900px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-            animation: fadeIn 1.5s ease-out;
         }
 
-        .booking-console h1 {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-            text-align: center;
+        /* Futuristic Booking Widget */
+        .booking-widget {
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glow);
+            border-radius: 12px;
+            padding: 2.5rem;
+            width: 90%;
+            max-width: 1000px;
+            margin-top: 5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
 
-        .booking-console p {
-            text-align: center;
-            margin-bottom: 2.5rem;
-            font-size: 1.1rem;
+        .widget-tabs {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 1rem;
         }
 
-        .form-grid {
+        .tab {
+            color: var(--text-secondary);
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .tab.active {
+            color: var(--accent);
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .form-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.5rem;
@@ -95,226 +119,328 @@
         }
 
         .input-group label {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
             margin-bottom: 0.5rem;
-            color: var(--accent-cyan);
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
         .input-group input, .input-group select {
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0,0,0,0.5);
             border: 1px solid #333;
+            color: var(--text-primary);
             padding: 1rem;
-            color: var(--text-light);
-            border-radius: 8px;
-            font-family: 'Inter', sans-serif;
+            border-radius: 6px;
+            font-size: 0.9rem;
             outline: none;
-            transition: all 0.3s ease;
+            transition: border 0.3s ease;
         }
 
         .input-group input:focus, .input-group select:focus {
-            border-color: var(--accent-cyan);
-            box-shadow: 0 0 10px var(--accent-cyan-dim);
+            border-color: var(--accent);
         }
 
-        .cta-btn {
+        /* Enforcing strict manual date entry & 12hr format */
+        .datetime-wrapper {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .btn-search {
             grid-column: 1 / -1;
             background: transparent;
-            color: var(--accent-cyan);
-            border: 1px solid var(--accent-cyan);
-            padding: 1.2rem;
-            font-size: 1.1rem;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 1rem;
+            font-family: 'Orbitron', sans-serif;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            font-family: 'Syncopate', sans-serif;
+            font-size: 1rem;
+            border-radius: 6px;
             cursor: pointer;
-            border-radius: 8px;
+            margin-top: 1rem;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
         }
 
-        .cta-btn:hover {
-            background: var(--accent-cyan);
-            color: var(--bg-deep);
-            box-shadow: 0 0 20px var(--accent-cyan-dim);
+        .btn-search:hover {
+            background: var(--accent);
+            color: var(--bg-base);
+            box-shadow: 0 0 15px var(--border-glow);
         }
 
-        /* Fleet Showcase & Features */
+        /* Section Layouts */
         .section {
-            padding: 5rem 2rem;
-            max-width: 1200px;
+            padding: 6rem 5%;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
-        .section-title {
-            text-align: center;
-            font-size: 1.8rem;
+        .section-header {
             margin-bottom: 3rem;
-            position: relative;
+            text-align: center;
         }
 
-        .grid-3 {
+        .section-header h2 {
+            font-size: 2.5rem;
+            color: var(--text-primary);
+        }
+
+        /* Exclusive Privileges (Offers) */
+        .offers-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
         }
 
-        .card {
-            background: var(--surface-dark);
+        .offer-card {
+            background: linear-gradient(145deg, #111, #0a0a0a);
+            border: 1px solid #222;
+            padding: 2rem;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .offer-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 2px; height: 100%;
+            background: var(--accent);
+        }
+
+        .offer-code {
+            display: inline-block;
+            background: rgba(100, 255, 218, 0.1);
+            color: var(--accent);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+
+        /* Fleet Showcase */
+        .fleet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .fleet-card {
+            background: var(--surface);
             border: 1px solid #222;
             border-radius: 12px;
             padding: 2rem;
-            transition: transform 0.3s ease, border-color 0.3s ease;
+            text-align: center;
+            transition: transform 0.3s ease;
         }
 
-        .card:hover {
-            transform: translateY(-10px);
-            border-color: var(--accent-cyan);
+        .fleet-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
         }
 
-        .card h3 {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-        }
-
-        .card p {
-            font-size: 0.95rem;
-            line-height: 1.6;
+        .fleet-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: contain;
             margin-bottom: 1.5rem;
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5));
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .fleet-specs {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #333;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Engineering Precision Section */
+        .engineering-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .feature-item {
+            margin-bottom: 2rem;
+        }
+
+        .feature-item h3 {
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .feature-item p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .engineering-grid { grid-template-columns: 1fr; }
+            .widget-tabs { flex-direction: column; gap: 1rem; }
         }
     </style>
 </head>
 <body>
 
-    <section class="hero">
-        <canvas id="particle-canvas"></canvas>
-        
-        <div class="booking-console">
-            <h1>Uncompromised Mobility</h1>
-            <p>Access the ultimate fleet with seamless digital verification.</p>
-            
-            <div class="form-grid">
+    <nav>
+        <div class="brand">ELITE<span>DRIVE</span></div>
+        <div class="nav-links">
+            <a href="#">Fleet</a>
+            <a href="#">Privileges</a>
+            <a href="#">Corporate</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div style="text-align: center; z-index: 1;">
+            <h1>Uncompromising Standards.</h1>
+            <p style="color: var(--text-secondary); margin-top: 1rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                Experience seamless vehicle allocation with precision engineering. Complete control, unrestricted mileage, and doorstep delivery.
+            </p>
+        </div>
+
+        <div class="booking-widget">
+            <div class="widget-tabs">
+                <div class="tab active">Short-Term Hire</div>
+                <div class="tab">Executive Subscription</div>
+            </div>
+
+            <div class="form-row">
                 <div class="input-group">
-                    <label>Pickup Location</label>
-                    <input type="text" placeholder="City or Airport Code">
-                </div>
-                <div class="input-group">
-                    <label>Pickup Date (DD/MM/YYYY)</label>
-                    <input type="text" placeholder="Select Date">
-                </div>
-                <div class="input-group">
-                    <label>Time</label>
+                    <label>Location</label>
                     <select>
-                        <option>10:00 AM</option>
-                        <option>12:00 PM</option>
-                        <option>02:00 PM</option>
+                        <option>Mumbai - Airport Terminal 2</option>
+                        <option>Mumbai - Bandra Kurla Complex</option>
+                        <option>Doorstep Delivery</option>
                     </select>
                 </div>
-                <button class="cta-btn">Initialize Booking</button>
+                
+                <div class="input-group">
+                    <label>Pick-Up (Date & Time)</label>
+                    <div class="datetime-wrapper">
+                        <input type="text" placeholder="DD/MM/YYYY" required>
+                        <select>
+                            <option value="09:00 AM">09:00 AM</option>
+                            <option value="09:30 AM">09:30 AM</option>
+                            <option value="10:00 AM">10:00 AM</option>
+                            <option value="10:30 AM">10:30 AM</option>
+                            <option value="11:00 AM">11:00 AM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Return (Date & Time)</label>
+                    <div class="datetime-wrapper">
+                        <input type="text" placeholder="DD/MM/YYYY" required>
+                        <select>
+                            <option value="05:00 PM">05:00 PM</option>
+                            <option value="05:30 PM">05:30 PM</option>
+                            <option value="06:00 PM">06:00 PM</option>
+                            <option value="06:30 PM">06:30 PM</option>
+                            <option value="07:00 PM">07:00 PM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn-search">View Available Fleet</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="section">
+        <div class="section-header">
+            <h2>Exclusive Privileges</h2>
+        </div>
+        <div class="offers-grid">
+            <div class="offer-card">
+                <h3>Executive Tier</h3>
+                <div class="offer-code">ELITE20</div>
+                <p style="color: var(--text-secondary)">Apply this privilege code for a flat 20% reduction on reservations extending beyond 5 days.</p>
+            </div>
+            <div class="offer-card">
+                <h3>Weekend Retreat</h3>
+                <div class="offer-code">WKD15</div>
+                <p style="color: var(--text-secondary)">Secure a 15% rate reduction on all luxury SUV configurations for Friday-Sunday deployments.</p>
+            </div>
+            <div class="offer-card">
+                <h3>Subscription Waiver</h3>
+                <div class="offer-code">SUB3000</div>
+                <p style="color: var(--text-secondary)">₹3000 off initial authorization hold for monthly corporate subscription models.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" style="background: var(--surface);">
+        <div class="section-header">
+            <h2>The Elite Fleet</h2>
+        </div>
+        <div class="fleet-grid">
+            <div class="fleet-card">
+                <img src="https://via.placeholder.com/400x200/111/64FFDA?text=Luxury+Sedan" alt="Ciaz/City Class">
+                <h3>Executive Sedan Class</h3>
+                <p style="color: var(--accent); margin-top: 0.5rem;">Starts at ₹2,399 / Day</p>
+                <div class="fleet-specs">
+                    <span>Transmission: Auto</span>
+                    <span>Fuel: Petrol</span>
+                    <span>Seats: 5</span>
+                </div>
+            </div>
+            <div class="fleet-card">
+                <img src="https://via.placeholder.com/400x200/111/64FFDA?text=Premium+SUV" alt="Creta/XUV Class">
+                <h3>Premium SUV Class</h3>
+                <p style="color: var(--accent); margin-top: 0.5rem;">Starts at ₹3,899 / Day</p>
+                <div class="fleet-specs">
+                    <span>Transmission: Auto/Manual</span>
+                    <span>Fuel: Diesel</span>
+                    <span>Seats: 7</span>
+                </div>
+            </div>
+            <div class="fleet-card">
+                <img src="https://via.placeholder.com/400x200/111/64FFDA?text=Urban+Hatch" alt="Swift/Altroz Class">
+                <h3>Urban Agility Class</h3>
+                <p style="color: var(--accent); margin-top: 0.5rem;">Starts at ₹1,899 / Day</p>
+                <div class="fleet-specs">
+                    <span>Transmission: Manual</span>
+                    <span>Fuel: Petrol</span>
+                    <span>Seats: 5</span>
+                </div>
             </div>
         </div>
     </section>
 
     <section class="section">
-        <h2 class="section-title">The Standard of Excellence</h2>
-        <div class="grid-3">
-            <div class="card">
-                <h3>Elite Fleet</h3>
-                <p>Curated selection of high-performance and luxury vehicles, meticulously maintained for your journey.</p>
+        <div class="engineering-grid">
+            <div>
+                <h2 style="font-size: 2.5rem; margin-bottom: 2rem;">Systemic Transparency.</h2>
+                <div class="feature-item">
+                    <h3>Total Utilization Analytics</h3>
+                    <p>Fare and duration models do not rely on rough estimates. Every reservation dynamically calculates your Total Utilization down to exact days and minutes, ensuring absolute billing accuracy.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Unrestricted Range</h3>
+                    <p>Select configurations offer unlimited kilometer thresholds, freeing your deployment from operational constraints.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Paperless Ecosystem</h3>
+                    <p>From initial booking to final digital invoice generation, the entire workflow operates on a secure, encrypted digital infrastructure.</p>
+                </div>
             </div>
-            <div class="card">
-                <h3>Digital Ecosystem</h3>
-                <p>Frictionless experience with automated duty slip generation, instant digital signatures, and paperless invoicing.</p>
-            </div>
-            <div class="card">
-                <h3>VIP Concierge</h3>
-                <p>24/7 dedicated support team and optional chauffeur services to handle logistics while you focus on the destination.</p>
+            <div style="background: var(--surface); height: 400px; border-radius: 12px; border: 1px solid #333; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
+                <div style="width: 200px; height: 200px; border: 2px solid var(--accent); border-radius: 50%; opacity: 0.2; position: absolute;"></div>
+                <div style="width: 300px; height: 300px; border: 1px solid var(--accent); border-radius: 50%; opacity: 0.1; position: absolute;"></div>
+                <p style="color: var(--accent); font-family: 'Orbitron', sans-serif; letter-spacing: 2px;">SECURE INFRASTRUCTURE</p>
             </div>
         </div>
     </section>
 
-    <script>
-        // Physics-based Particle Animation for Background
-        const canvas = document.getElementById('particle-canvas');
-        const ctx = canvas.getContext('2d');
-
-        let particles = [];
-        const particleCount = 70;
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.vx = (Math.random() - 0.5) * 0.5;
-                this.vy = (Math.random() - 0.5) * 0.5;
-                this.radius = Math.random() * 2;
-            }
-
-            update() {
-                this.x += this.vx;
-                this.y += this.vy;
-
-                // Bounce off edges
-                if (this.x < 0 || this.x > canvas.width) this.vx = -this.vx;
-                if (this.y < 0 || this.y > canvas.height) this.vy = -this.vy;
-            }
-
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(102, 252, 241, 0.4)';
-                ctx.fill();
-            }
-        }
-
-        for (let i = 0; i < particleCount; i++) {
-            particles.push(new Particle());
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Draw connecting lines
-            for (let i = 0; i < particles.length; i++) {
-                for (let j = i + 1; j < particles.length; j++) {
-                    const dx = particles[i].x - particles[j].x;
-                    const dy = particles[i].y - particles[j].y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-
-                    if (distance < 120) {
-                        ctx.beginPath();
-                        ctx.strokeStyle = `rgba(102, 252, 241, ${0.15 - distance / 800})`;
-                        ctx.lineWidth = 1;
-                        ctx.moveTo(particles[i].x, particles[i].y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.stroke();
-                    }
-                }
-            }
-
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
-
-            requestAnimationFrame(animate);
-        }
-
-        animate();
-    </script>
 </body>
 </html>
