@@ -1,1 +1,1328 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DriveEasy – Self Car Rental</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ─── RESET & TOKENS ─── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink:        #0D0D0D;
+    --chalk:      #F7F6F2;
+    --asphalt:    #1A1A2E;
+    --velocity:   #E8FF47;   /* signature acid-lime */
+    --steel:      #6B7280;
+    --mist:       #EDEDEA;
+    --white:      #FFFFFF;
+    --radius-sm:  8px;
+    --radius-md:  16px;
+    --radius-lg:  28px;
+    --shadow:     0 4px 32px rgba(0,0,0,.10);
+    --font-display: 'Syne', sans-serif;
+    --font-body:    'Inter', sans-serif;
+    --nav-h: 72px;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font-body); background: var(--chalk); color: var(--ink); overflow-x: hidden; }
+  img { display: block; max-width: 100%; }
+  a { text-decoration: none; color: inherit; }
+  ul { list-style: none; }
+
+  /* ─── UTILITY ─── */
+  .container { width: 100%; max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+  .tag { font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--steel); }
+  .highlight { color: var(--velocity); background: var(--asphalt); padding: 0 6px; border-radius: 4px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font-display); font-weight: 700; font-size: .9rem;
+    padding: 14px 28px; border-radius: var(--radius-lg); border: none; cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.18); }
+  .btn-primary { background: var(--velocity); color: var(--ink); }
+  .btn-dark    { background: var(--asphalt); color: var(--white); }
+  .btn-outline { background: transparent; color: var(--asphalt); border: 2px solid var(--asphalt); }
+  .section-title {
+    font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800; line-height: 1.1; letter-spacing: -.02em;
+  }
+
+  /* ─── PAGE SYSTEM ─── */
+  .page { display: none; min-height: 100vh; }
+  .page.active { display: block; }
+
+  /* ─── NAV ─── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    height: var(--nav-h); background: rgba(247,246,242,.92);
+    backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,.06);
+  }
+  .nav-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 100%;
+  }
+  .logo {
+    font-family: var(--font-display); font-weight: 800; font-size: 1.4rem;
+    letter-spacing: -.03em; color: var(--asphalt);
+  }
+  .logo span { color: var(--velocity); background: var(--asphalt); padding: 1px 5px; border-radius: 4px; }
+  .nav-links { display: flex; gap: 8px; align-items: center; }
+  .nav-links a {
+    font-family: var(--font-display); font-weight: 600; font-size: .88rem;
+    padding: 8px 16px; border-radius: 40px; color: var(--steel);
+    transition: background .2s, color .2s;
+  }
+  .nav-links a:hover, .nav-links a.active {
+    background: var(--asphalt); color: var(--white);
+  }
+  .nav-cta { margin-left: 8px; }
+  .hamburger {
+    display: none; flex-direction: column; gap: 5px;
+    background: none; border: none; cursor: pointer; padding: 4px;
+  }
+  .hamburger span {
+    display: block; width: 24px; height: 2px;
+    background: var(--ink); border-radius: 2px;
+    transition: all .3s;
+  }
+  .mobile-menu {
+    display: none; position: fixed; inset: 0; z-index: 99;
+    background: var(--asphalt); flex-direction: column;
+    align-items: center; justify-content: center; gap: 12px;
+  }
+  .mobile-menu.open { display: flex; }
+  .mobile-menu a {
+    font-family: var(--font-display); font-weight: 700; font-size: 1.6rem;
+    color: var(--white); padding: 12px 32px; border-radius: 40px;
+    transition: background .2s;
+  }
+  .mobile-menu a:hover, .mobile-menu a.active { background: var(--velocity); color: var(--ink); }
+  .mobile-close {
+    position: absolute; top: 24px; right: 24px;
+    background: none; border: none; cursor: pointer;
+    font-size: 1.8rem; color: var(--white);
+  }
+
+  /* ════════════════════════════════════════
+     HOME PAGE
+  ════════════════════════════════════════ */
+  /* Hero */
+  .hero {
+    background: var(--asphalt);
+    min-height: calc(100vh - var(--nav-h));
+    display: grid; grid-template-columns: 1fr 1fr;
+    align-items: center; overflow: hidden; position: relative;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 70% 50%, rgba(232,255,71,.08), transparent 60%);
+    pointer-events: none;
+  }
+  .hero-copy { padding: 80px 60px 80px 0; z-index: 1; }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12);
+    border-radius: 40px; padding: 6px 16px; margin-bottom: 28px;
+  }
+  .hero-eyebrow .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--velocity); }
+  .hero-eyebrow span { font-size: .78rem; font-weight: 500; color: rgba(255,255,255,.7); letter-spacing: .05em; }
+  .hero-headline {
+    font-family: var(--font-display); font-size: clamp(2.4rem, 4.5vw, 4rem);
+    font-weight: 800; line-height: 1.05; letter-spacing: -.03em;
+    color: var(--white); margin-bottom: 20px;
+  }
+  .hero-headline em { font-style: normal; color: var(--velocity); }
+  .hero-sub {
+    font-size: 1.05rem; line-height: 1.7; color: rgba(255,255,255,.6);
+    max-width: 440px; margin-bottom: 36px;
+  }
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .hero-stats {
+    display: flex; gap: 32px; margin-top: 52px;
+    padding-top: 32px; border-top: 1px solid rgba(255,255,255,.1);
+  }
+  .stat-val {
+    font-family: var(--font-display); font-size: 1.8rem;
+    font-weight: 800; color: var(--white); letter-spacing: -.03em;
+  }
+  .stat-val span { color: var(--velocity); }
+  .stat-lbl { font-size: .75rem; color: rgba(255,255,255,.45); margin-top: 2px; text-transform: uppercase; letter-spacing: .08em; }
+  /* Car Showcase */
+  .hero-visual {
+    position: relative; display: flex; align-items: center; justify-content: center;
+    height: 100%;
+  }
+  .car-ring {
+    position: absolute; width: 420px; height: 420px;
+    border-radius: 50%; border: 1px solid rgba(232,255,71,.12);
+    animation: spin 18s linear infinite;
+  }
+  .car-ring-2 {
+    width: 320px; height: 320px;
+    border: 1px dashed rgba(232,255,71,.07);
+    animation-direction: reverse; animation-duration: 12s;
+  }
+  @keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+  .car-svg {
+    position: relative; z-index: 2;
+    filter: drop-shadow(0 24px 48px rgba(0,0,0,.5));
+    animation: float 4s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-16px); }
+  }
+
+  /* Booking Bar */
+  .booking-bar {
+    background: var(--white); border-radius: var(--radius-lg);
+    box-shadow: 0 16px 64px rgba(0,0,0,.12);
+    padding: 28px 32px; margin-top: -40px; position: relative; z-index: 10;
+  }
+  .booking-bar h3 {
+    font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;
+    margin-bottom: 20px; color: var(--ink);
+  }
+  .bb-fields { display: grid; grid-template-columns: repeat(4, 1fr) auto; gap: 12px; align-items: end; }
+  .bb-field label {
+    display: block; font-size: .72rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .08em; color: var(--steel); margin-bottom: 6px;
+  }
+  .bb-field input, .bb-field select {
+    width: 100%; padding: 12px 14px; border-radius: var(--radius-sm);
+    border: 1.5px solid var(--mist); font-family: var(--font-body);
+    font-size: .9rem; color: var(--ink); background: var(--chalk);
+    outline: none; transition: border-color .2s;
+  }
+  .bb-field input:focus, .bb-field select:focus { border-color: var(--asphalt); }
+
+  /* Fleet Preview */
+  .fleet-section { padding: 100px 0; }
+  .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 52px; }
+  .fleet-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .car-card {
+    background: var(--white); border-radius: var(--radius-lg);
+    overflow: hidden; transition: transform .3s, box-shadow .3s;
+    cursor: pointer; border: 1.5px solid transparent;
+  }
+  .car-card:hover { transform: translateY(-6px); box-shadow: var(--shadow); border-color: var(--velocity); }
+  .car-card-img {
+    background: var(--mist); height: 180px;
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+  }
+  .car-card-body { padding: 20px; }
+  .car-card-type { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--steel); margin-bottom: 4px; }
+  .car-card-name { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; margin-bottom: 12px; }
+  .car-card-specs {
+    display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;
+  }
+  .spec { display: flex; align-items: center; gap: 5px; font-size: .78rem; color: var(--steel); }
+  .car-card-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 16px; border-top: 1px solid var(--mist); }
+  .price-tag { font-family: var(--font-display); font-size: 1.3rem; font-weight: 800; }
+  .price-tag span { font-size: .75rem; font-weight: 400; color: var(--steel); }
+
+  /* Why Choose */
+  .why-section { background: var(--asphalt); padding: 100px 0; }
+  .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+  .why-features { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 36px; }
+  .why-feat {
+    background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+    border-radius: var(--radius-md); padding: 24px;
+    transition: background .25s, border-color .25s;
+  }
+  .why-feat:hover { background: rgba(232,255,71,.06); border-color: rgba(232,255,71,.2); }
+  .feat-icon {
+    width: 44px; height: 44px; border-radius: var(--radius-sm);
+    background: rgba(232,255,71,.1); display: flex; align-items: center;
+    justify-content: center; margin-bottom: 14px; font-size: 1.3rem;
+  }
+  .feat-title { font-family: var(--font-display); font-weight: 700; font-size: .95rem; color: var(--white); margin-bottom: 6px; }
+  .feat-desc { font-size: .8rem; line-height: 1.6; color: rgba(255,255,255,.5); }
+
+  /* Testimonials */
+  .testimonials { padding: 100px 0; background: var(--chalk); }
+  .test-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 52px; }
+  .test-card {
+    background: var(--white); border-radius: var(--radius-lg);
+    padding: 32px; border: 1.5px solid var(--mist);
+  }
+  .stars { color: var(--velocity); font-size: 1rem; margin-bottom: 16px; filter: brightness(0.7) saturate(2); }
+  .test-quote { font-size: .9rem; line-height: 1.7; color: var(--ink); margin-bottom: 20px; }
+  .test-author { display: flex; align-items: center; gap: 12px; }
+  .avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-weight: 700; font-size: .9rem;
+    color: var(--white);
+  }
+  .author-name { font-weight: 600; font-size: .88rem; }
+  .author-loc { font-size: .75rem; color: var(--steel); }
+
+  /* CTA Banner */
+  .cta-banner {
+    background: var(--velocity); padding: 80px 0;
+  }
+  .cta-inner { display: flex; justify-content: space-between; align-items: center; gap: 32px; flex-wrap: wrap; }
+  .cta-text h2 { font-family: var(--font-display); font-size: clamp(1.8rem, 3vw, 2.5rem); font-weight: 800; color: var(--ink); }
+  .cta-text p { color: rgba(0,0,0,.55); margin-top: 8px; }
+
+  /* ════════════════════════════════════════
+     SERVICES PAGE
+  ════════════════════════════════════════ */
+  .page-hero {
+    background: var(--asphalt); padding: 80px 0;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .page-hero::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 80px;
+    background: linear-gradient(to bottom, transparent, var(--chalk));
+  }
+  .page-hero h1 { font-family: var(--font-display); font-size: clamp(2.4rem, 5vw, 3.6rem); font-weight: 800; color: var(--white); margin-bottom: 12px; }
+  .page-hero p { color: rgba(255,255,255,.55); font-size: 1.05rem; max-width: 500px; margin: 0 auto; }
+  .services-section { padding: 80px 0 100px; }
+  .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 52px; }
+  .service-card {
+    background: var(--white); border-radius: var(--radius-lg); padding: 36px 28px;
+    border: 1.5px solid var(--mist); transition: all .3s;
+  }
+  .service-card:hover { border-color: var(--asphalt); transform: translateY(-4px); box-shadow: var(--shadow); }
+  .service-icon {
+    width: 60px; height: 60px; border-radius: var(--radius-md);
+    background: var(--asphalt); display: flex; align-items: center;
+    justify-content: center; font-size: 1.6rem; margin-bottom: 20px;
+  }
+  .service-title { font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; margin-bottom: 10px; }
+  .service-desc { font-size: .88rem; line-height: 1.7; color: var(--steel); margin-bottom: 20px; }
+  .service-price { font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; color: var(--asphalt); }
+  .service-price span { font-size: .8rem; font-weight: 400; color: var(--steel); }
+
+  /* Fleet Full */
+  .fleet-full { background: var(--mist); padding: 80px 0; }
+  .fleet-full-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 48px; }
+  .fleet-row-card {
+    background: var(--white); border-radius: var(--radius-lg);
+    display: flex; align-items: center; gap: 20px; padding: 20px 24px;
+    border: 1.5px solid transparent; transition: all .3s;
+  }
+  .fleet-row-card:hover { border-color: var(--velocity); transform: translateX(4px); }
+  .fleet-row-img {
+    width: 100px; height: 70px; background: var(--mist);
+    border-radius: var(--radius-sm); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.5rem;
+  }
+  .fleet-row-info { flex: 1; }
+  .fleet-row-name { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; }
+  .fleet-row-meta { font-size: .8rem; color: var(--steel); margin-top: 4px; }
+  .fleet-row-price { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; color: var(--asphalt); text-align: right; }
+  .fleet-row-price span { display: block; font-size: .7rem; font-weight: 400; color: var(--steel); }
+
+  /* Add-ons */
+  .addons-section { padding: 80px 0; }
+  .addons-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 48px; }
+  .addon-card {
+    text-align: center; padding: 28px 16px;
+    background: var(--white); border-radius: var(--radius-lg);
+    border: 1.5px solid var(--mist); transition: all .3s;
+  }
+  .addon-card:hover { background: var(--asphalt); color: var(--white); }
+  .addon-card:hover .addon-lbl, .addon-card:hover .addon-name { color: var(--white); }
+  .addon-emoji { font-size: 2rem; margin-bottom: 12px; }
+  .addon-name { font-family: var(--font-display); font-weight: 700; font-size: .95rem; margin-bottom: 4px; }
+  .addon-lbl { font-size: .78rem; color: var(--steel); }
+
+  /* ════════════════════════════════════════
+     ABOUT US PAGE
+  ════════════════════════════════════════ */
+  .about-intro { padding: 80px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+  .about-img-block {
+    position: relative; height: 440px;
+    background: linear-gradient(135deg, var(--asphalt), #2d2d4e);
+    border-radius: var(--radius-lg); overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .about-img-block::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, rgba(232,255,71,.12), transparent 70%);
+  }
+  .about-big-text {
+    font-family: var(--font-display); font-size: 8rem; font-weight: 800;
+    color: rgba(232,255,71,.15); line-height: 1;
+    position: absolute;
+  }
+  .about-year-badge {
+    background: var(--velocity); color: var(--ink); border-radius: var(--radius-md);
+    padding: 16px 24px; text-align: center; position: absolute; bottom: 32px; right: 32px;
+  }
+  .about-year-badge .yr { font-family: var(--font-display); font-size: 2rem; font-weight: 800; line-height: 1; }
+  .about-year-badge .lbl { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; margin-top: 2px; }
+  .about-copy .tag { margin-bottom: 12px; display: block; }
+  .about-copy h2 { font-family: var(--font-display); font-size: clamp(2rem, 3.5vw, 2.8rem); font-weight: 800; line-height: 1.1; margin-bottom: 20px; }
+  .about-copy p { color: var(--steel); line-height: 1.8; margin-bottom: 16px; font-size: .95rem; }
+
+  /* Mission / Values */
+  .values-section { background: var(--asphalt); padding: 80px 0; }
+  .values-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 48px; }
+  .value-card {
+    background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+    border-radius: var(--radius-lg); padding: 28px 24px; text-align: center;
+  }
+  .value-num {
+    font-family: var(--font-display); font-size: 2.8rem; font-weight: 800;
+    color: var(--velocity); line-height: 1; margin-bottom: 8px;
+  }
+  .value-title { font-family: var(--font-display); font-weight: 700; font-size: 1rem; color: var(--white); margin-bottom: 8px; }
+  .value-desc { font-size: .8rem; color: rgba(255,255,255,.45); line-height: 1.6; }
+
+  /* Team */
+  .team-section { padding: 80px 0; }
+  .team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 48px; }
+  .team-card {
+    background: var(--white); border-radius: var(--radius-lg); overflow: hidden;
+    border: 1.5px solid var(--mist); transition: all .3s;
+  }
+  .team-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+  .team-photo {
+    height: 160px; display: flex; align-items: center; justify-content: center;
+    font-size: 4rem; background: var(--mist);
+  }
+  .team-info { padding: 16px 20px; }
+  .team-name { font-family: var(--font-display); font-weight: 700; font-size: .95rem; margin-bottom: 4px; }
+  .team-role { font-size: .78rem; color: var(--steel); }
+
+  /* Timeline */
+  .timeline-section { background: var(--chalk); padding: 80px 0; }
+  .timeline { margin-top: 52px; position: relative; max-width: 800px; margin-left: auto; margin-right: auto; }
+  .timeline::before {
+    content: ''; position: absolute; left: 50%; top: 0; bottom: 0;
+    width: 2px; background: var(--mist); transform: translateX(-50%);
+  }
+  .tl-item {
+    display: flex; gap: 40px; margin-bottom: 40px; align-items: flex-start;
+    position: relative;
+  }
+  .tl-item:nth-child(even) { flex-direction: row-reverse; }
+  .tl-content {
+    flex: 1; background: var(--white); border-radius: var(--radius-md);
+    padding: 24px; border: 1.5px solid var(--mist);
+  }
+  .tl-year {
+    font-family: var(--font-display); font-weight: 800; font-size: 1rem;
+    color: var(--velocity); background: var(--asphalt); padding: 4px 12px;
+    border-radius: 20px; display: inline-block; margin-bottom: 8px;
+  }
+  .tl-title { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; margin-bottom: 6px; }
+  .tl-desc { font-size: .83rem; color: var(--steel); line-height: 1.6; }
+  .tl-dot {
+    position: absolute; left: 50%; top: 20px;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--velocity); border: 3px solid var(--asphalt);
+    transform: translateX(-50%);
+  }
+
+  /* ════════════════════════════════════════
+     CONTACT PAGE
+  ════════════════════════════════════════ */
+  .contact-layout { padding: 80px 0; display: grid; grid-template-columns: 1fr 1.4fr; gap: 64px; align-items: start; }
+  .contact-info .tag { margin-bottom: 12px; display: block; }
+  .contact-info h2 { font-family: var(--font-display); font-size: clamp(2rem, 3.5vw, 2.6rem); font-weight: 800; line-height: 1.1; margin-bottom: 20px; }
+  .contact-info > p { color: var(--steel); line-height: 1.8; margin-bottom: 36px; font-size: .95rem; }
+  .contact-items { display: flex; flex-direction: column; gap: 20px; margin-bottom: 36px; }
+  .c-item { display: flex; gap: 16px; align-items: flex-start; }
+  .c-icon {
+    width: 48px; height: 48px; flex-shrink: 0; border-radius: var(--radius-sm);
+    background: var(--asphalt); display: flex; align-items: center;
+    justify-content: center; font-size: 1.2rem;
+  }
+  .c-label { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--steel); margin-bottom: 3px; }
+  .c-value { font-weight: 600; font-size: .95rem; }
+  .c-sub { font-size: .8rem; color: var(--steel); margin-top: 2px; }
+  .socials { display: flex; gap: 10px; }
+  .social-btn {
+    width: 42px; height: 42px; border-radius: var(--radius-sm);
+    background: var(--mist); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; transition: background .2s;
+  }
+  .social-btn:hover { background: var(--asphalt); color: var(--white); }
+
+  /* Form */
+  .contact-form {
+    background: var(--white); border-radius: var(--radius-lg);
+    padding: 40px; border: 1.5px solid var(--mist);
+  }
+  .contact-form h3 { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; margin-bottom: 28px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { margin-bottom: 20px; }
+  .form-group label {
+    display: block; font-size: .75rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .08em; color: var(--steel); margin-bottom: 8px;
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 13px 16px; border-radius: var(--radius-sm);
+    border: 1.5px solid var(--mist); font-family: var(--font-body);
+    font-size: .9rem; color: var(--ink); background: var(--chalk);
+    outline: none; transition: border-color .2s; resize: none;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--asphalt);
+  }
+  .form-success {
+    display: none; background: #f0fff4; border: 1.5px solid #a3e6c0;
+    border-radius: var(--radius-sm); padding: 16px; margin-top: 16px;
+    font-size: .9rem; color: #1a7a4a; text-align: center;
+  }
+
+  /* Map placeholder */
+  .map-section { background: var(--mist); padding: 60px 0; }
+  .map-placeholder {
+    background: linear-gradient(135deg, var(--asphalt), #1e2a45);
+    border-radius: var(--radius-lg); height: 340px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 12px;
+    color: rgba(255,255,255,.5); position: relative; overflow: hidden;
+  }
+  .map-grid {
+    position: absolute; inset: 0; opacity: .06;
+    background-image: linear-gradient(rgba(255,255,255,.5) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,.5) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .map-pin { font-size: 2.5rem; z-index: 1; }
+  .map-text { font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: var(--white); z-index: 1; }
+  .map-sub { font-size: .82rem; color: rgba(255,255,255,.45); z-index: 1; }
+
+  /* FAQ */
+  .faq-section { padding: 80px 0; }
+  .faq-list { max-width: 740px; margin: 48px auto 0; }
+  .faq-item {
+    border-bottom: 1.5px solid var(--mist); padding: 20px 0;
+  }
+  .faq-q {
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; font-family: var(--font-display); font-weight: 600; font-size: .95rem;
+    user-select: none;
+  }
+  .faq-icon {
+    width: 28px; height: 28px; border-radius: 50%; background: var(--mist);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; flex-shrink: 0; transition: all .3s;
+  }
+  .faq-a {
+    display: none; font-size: .88rem; line-height: 1.7;
+    color: var(--steel); padding-top: 12px;
+  }
+  .faq-item.open .faq-a { display: block; }
+  .faq-item.open .faq-icon { background: var(--asphalt); color: var(--white); transform: rotate(45deg); }
+
+  /* ─── FOOTER ─── */
+  footer { background: var(--ink); color: var(--white); padding: 64px 0 32px; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+  .footer-brand .logo { font-size: 1.6rem; margin-bottom: 14px; }
+  .footer-brand p { font-size: .85rem; color: rgba(255,255,255,.45); line-height: 1.7; max-width: 260px; }
+  .footer-col h4 { font-family: var(--font-display); font-weight: 700; font-size: .9rem; color: var(--white); margin-bottom: 18px; }
+  .footer-col a { display: block; font-size: .83rem; color: rgba(255,255,255,.45); margin-bottom: 10px; transition: color .2s; }
+  .footer-col a:hover { color: var(--velocity); }
+  .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 24px; border-top: 1px solid rgba(255,255,255,.08); }
+  .footer-bottom p { font-size: .8rem; color: rgba(255,255,255,.3); }
+  .footer-badges { display: flex; gap: 8px; }
+  .badge { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 20px; padding: 4px 12px; font-size: .72rem; color: rgba(255,255,255,.4); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 1024px) {
+    .fleet-grid { grid-template-columns: 1fr 1fr; }
+    .why-grid { grid-template-columns: 1fr; gap: 40px; }
+    .test-grid { grid-template-columns: 1fr 1fr; }
+    .services-grid { grid-template-columns: 1fr 1fr; }
+    .values-grid { grid-template-columns: 1fr 1fr; }
+    .team-grid { grid-template-columns: 1fr 1fr; }
+    .addons-grid { grid-template-columns: 1fr 1fr; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 768px) {
+    .nav-links, .nav-cta { display: none; }
+    .hamburger { display: flex; }
+    .hero { grid-template-columns: 1fr; min-height: auto; }
+    .hero-copy { padding: 60px 0 40px; text-align: center; }
+    .hero-actions { justify-content: center; }
+    .hero-stats { justify-content: center; }
+    .hero-visual { display: none; }
+    .bb-fields { grid-template-columns: 1fr 1fr; }
+    .fleet-grid { grid-template-columns: 1fr; }
+    .test-grid { grid-template-columns: 1fr; }
+    .services-grid { grid-template-columns: 1fr; }
+    .fleet-full-grid { grid-template-columns: 1fr; }
+    .values-grid { grid-template-columns: 1fr 1fr; }
+    .team-grid { grid-template-columns: 1fr 1fr; }
+    .about-intro { grid-template-columns: 1fr; }
+    .contact-layout { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .addons-grid { grid-template-columns: 1fr 1fr; }
+    .cta-inner { flex-direction: column; text-align: center; }
+    .section-header { flex-direction: column; gap: 16px; align-items: flex-start; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .timeline::before { left: 16px; }
+    .tl-item, .tl-item:nth-child(even) { flex-direction: column; padding-left: 44px; }
+    .tl-dot { left: 16px; top: 20px; }
+    .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+  }
+  @media (max-width: 480px) {
+    .bb-fields { grid-template-columns: 1fr; }
+    .hero-stats { flex-direction: column; gap: 16px; }
+    .values-grid { grid-template-columns: 1fr; }
+    .team-grid { grid-template-columns: 1fr 1fr; }
+    .addons-grid { grid-template-columns: 1fr 1fr; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .why-features { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .car-ring, .car-svg { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ NAVIGATION ═══════════════════ -->
+<nav>
+  <div class="container nav-inner">
+    <div class="logo">Drive<span>Easy</span></div>
+    <div class="nav-links">
+      <a href="#" class="active" data-page="home">Home</a>
+      <a href="#" data-page="services">Services</a>
+      <a href="#" data-page="about">About Us</a>
+      <a href="#" data-page="contact">Contact</a>
+    </div>
+    <a href="#" class="btn btn-primary nav-cta" data-page="services" style="padding:10px 22px;font-size:.82rem;">Book Now</a>
+    <button class="hamburger" id="hamburger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-close" id="mobileClose">✕</button>
+  <a href="#" data-page="home">Home</a>
+  <a href="#" data-page="services">Services</a>
+  <a href="#" data-page="about">About Us</a>
+  <a href="#" data-page="contact">Contact</a>
+  <a href="#" data-page="services" class="btn btn-primary" style="margin-top:16px;">Book a Car</a>
+</div>
+
+
+<!-- ═══════════════════ PAGE: HOME ═══════════════════ -->
+<div class="page active" id="page-home">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container" style="display:contents">
+      <div class="hero-copy container">
+        <div class="hero-eyebrow">
+          <span class="dot"></span>
+          <span>Mumbai's Premier Self-Drive Rental</span>
+        </div>
+        <h1 class="hero-headline">
+          Your Road,<br>
+          <em>Your Rules.</em><br>
+          Drive Free.
+        </h1>
+        <p class="hero-sub">
+          Pick any car, drive anywhere, return on your own terms. No driver, no hassle — just you and the open road across India.
+        </p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" data-page="services">Browse Fleet</button>
+          <button class="btn btn-dark" data-page="about" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.15);">How It Works</button>
+        </div>
+        <div class="hero-stats">
+          <div>
+            <div class="stat-val">200<span>+</span></div>
+            <div class="stat-lbl">Cars Available</div>
+          </div>
+          <div>
+            <div class="stat-val">18k<span>+</span></div>
+            <div class="stat-lbl">Happy Customers</div>
+          </div>
+          <div>
+            <div class="stat-val">50<span>+</span></div>
+            <div class="stat-lbl">Cities Covered</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="car-ring"></div>
+        <div class="car-ring car-ring-2"></div>
+        <svg class="car-svg" width="420" height="220" viewBox="0 0 420 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Car body -->
+          <ellipse cx="210" cy="190" rx="160" ry="18" fill="rgba(0,0,0,0.3)"/>
+          <!-- Main body -->
+          <rect x="60" y="130" width="300" height="60" rx="10" fill="#2d4a8c"/>
+          <!-- Roof -->
+          <path d="M130 130 L160 85 Q210 65 260 85 L290 130Z" fill="#3556a3"/>
+          <!-- Windshield -->
+          <path d="M158 128 L170 90 Q210 75 250 90 L262 128Z" fill="rgba(150,200,255,0.4)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          <!-- Windows side -->
+          <rect x="170" y="90" width="34" height="36" rx="4" fill="rgba(130,185,255,0.35)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          <rect x="216" y="90" width="34" height="36" rx="4" fill="rgba(130,185,255,0.35)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          <!-- Hood -->
+          <path d="M360 165 L330 130 L300 130 L300 165Z" fill="#4060b5"/>
+          <!-- Boot -->
+          <path d="M60 165 L90 130 L120 130 L120 165Z" fill="#4060b5"/>
+          <!-- Bumper front -->
+          <rect x="340" y="162" width="28" height="18" rx="4" fill="#354d9c"/>
+          <!-- Bumper rear -->
+          <rect x="52" y="162" width="28" height="18" rx="4" fill="#354d9c"/>
+          <!-- Wheels -->
+          <circle cx="120" cy="178" r="26" fill="#1a1a2e" stroke="#444" stroke-width="3"/>
+          <circle cx="120" cy="178" r="14" fill="#333" stroke="#555" stroke-width="2"/>
+          <circle cx="120" cy="178" r="5" fill="#666"/>
+          <circle cx="300" cy="178" r="26" fill="#1a1a2e" stroke="#444" stroke-width="3"/>
+          <circle cx="300" cy="178" r="14" fill="#333" stroke="#555" stroke-width="2"/>
+          <circle cx="300" cy="178" r="5" fill="#666"/>
+          <!-- Headlights -->
+          <rect x="352" y="145" width="18" height="10" rx="3" fill="#E8FF47" opacity="0.9"/>
+          <rect x="356" y="158" width="14" height="7" rx="2" fill="rgba(232,255,71,0.4)"/>
+          <!-- Tail lights -->
+          <rect x="50" y="145" width="16" height="10" rx="3" fill="#ff4444" opacity="0.9"/>
+          <!-- Door lines -->
+          <line x1="210" y1="130" x2="210" y2="190" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+          <!-- Logo area -->
+          <circle cx="362" cy="175" r="8" fill="rgba(232,255,71,0.15)" stroke="rgba(232,255,71,0.3)" stroke-width="1"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Booking Bar -->
+  <section style="padding: 0 0 60px;">
+    <div class="container">
+      <div class="booking-bar">
+        <h3>🔍 Find Your Perfect Car</h3>
+        <div class="bb-fields">
+          <div class="bb-field">
+            <label>Pickup City</label>
+            <select>
+              <option>Mumbai</option>
+              <option>Delhi</option>
+              <option>Bangalore</option>
+              <option>Pune</option>
+              <option>Hyderabad</option>
+              <option>Chennai</option>
+            </select>
+          </div>
+          <div class="bb-field">
+            <label>Car Type</label>
+            <select>
+              <option>All Types</option>
+              <option>Hatchback</option>
+              <option>Sedan</option>
+              <option>SUV</option>
+              <option>Luxury</option>
+              <option>Electric</option>
+            </select>
+          </div>
+          <div class="bb-field">
+            <label>Pickup Date</label>
+            <input type="date">
+          </div>
+          <div class="bb-field">
+            <label>Return Date</label>
+            <input type="date">
+          </div>
+          <button class="btn btn-primary" data-page="services">Search →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fleet Preview -->
+  <section class="fleet-section">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <span class="tag">Our Fleet</span>
+          <h2 class="section-title" style="margin-top:8px;">Cars for Every Journey</h2>
+        </div>
+        <button class="btn btn-outline" data-page="services">View All Cars →</button>
+      </div>
+      <div class="fleet-grid">
+        <!-- Card 1 -->
+        <div class="car-card">
+          <div class="car-card-img">
+            <svg width="180" height="90" viewBox="0 0 180 90" fill="none"><ellipse cx="90" cy="80" rx="70" ry="8" fill="rgba(0,0,0,.12)"/><rect x="25" y="48" width="130" height="30" rx="6" fill="#4ECDC4"/><path d="M55 48 L70 22 Q90 14 110 22 L125 48Z" fill="#5dd8cf"/><path d="M68 47 L75 26 Q90 19 105 26 L112 47Z" fill="rgba(200,255,253,0.35)"/><circle cx="52" cy="72" r="14" fill="#1a1a2e"/><circle cx="52" cy="72" r="7" fill="#333"/><circle cx="128" cy="72" r="14" fill="#1a1a2e"/><circle cx="128" cy="72" r="7" fill="#333"/><rect x="145" y="55" width="12" height="7" rx="2" fill="#E8FF47" opacity=".9"/></svg>
+          </div>
+          <div class="car-card-body">
+            <div class="car-card-type">Hatchback</div>
+            <div class="car-card-name">Maruti Swift</div>
+            <div class="car-card-specs">
+              <span class="spec">⛽ Petrol</span>
+              <span class="spec">👥 5 Seats</span>
+              <span class="spec">❄️ AC</span>
+              <span class="spec">⚙️ Manual</span>
+            </div>
+            <div class="car-card-footer">
+              <div class="price-tag">₹599 <span>/ day</span></div>
+              <button class="btn btn-primary" style="padding:8px 18px;font-size:.78rem;" data-page="contact">Book</button>
+            </div>
+          </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="car-card">
+          <div class="car-card-img">
+            <svg width="180" height="90" viewBox="0 0 180 90" fill="none"><ellipse cx="90" cy="80" rx="70" ry="8" fill="rgba(0,0,0,.12)"/><rect x="20" y="46" width="140" height="32" rx="8" fill="#6C63FF"/><path d="M50 46 L65 18 Q90 10 115 18 L130 46Z" fill="#7c74ff"/><path d="M63 45 L72 22 Q90 15 108 22 L117 45Z" fill="rgba(220,218,255,0.35)"/><circle cx="48" cy="70" r="15" fill="#1a1a2e"/><circle cx="48" cy="70" r="8" fill="#333"/><circle cx="132" cy="70" r="15" fill="#1a1a2e"/><circle cx="132" cy="70" r="8" fill="#333"/><rect x="148" y="52" width="12" height="7" rx="2" fill="#E8FF47" opacity=".9"/></svg>
+          </div>
+          <div class="car-card-body">
+            <div class="car-card-type">Sedan</div>
+            <div class="car-card-name">Honda City</div>
+            <div class="car-card-specs">
+              <span class="spec">⛽ Petrol</span>
+              <span class="spec">👥 5 Seats</span>
+              <span class="spec">❄️ AC</span>
+              <span class="spec">🔄 Auto</span>
+            </div>
+            <div class="car-card-footer">
+              <div class="price-tag">₹999 <span>/ day</span></div>
+              <button class="btn btn-primary" style="padding:8px 18px;font-size:.78rem;" data-page="contact">Book</button>
+            </div>
+          </div>
+        </div>
+        <!-- Card 3 -->
+        <div class="car-card">
+          <div class="car-card-img">
+            <svg width="180" height="90" viewBox="0 0 180 90" fill="none"><ellipse cx="90" cy="80" rx="72" ry="9" fill="rgba(0,0,0,.14)"/><rect x="15" y="40" width="150" height="38" rx="10" fill="#E8683A"/><path d="M45 40 L62 16 Q90 7 118 16 L135 40Z" fill="#f07850"/><path d="M60 39 L70 19 Q90 13 110 19 L120 39Z" fill="rgba(255,230,220,0.3)"/><circle cx="46" cy="66" r="17" fill="#1a1a2e"/><circle cx="46" cy="66" r="9" fill="#333"/><circle cx="134" cy="66" r="17" fill="#1a1a2e"/><circle cx="134" cy="66" r="9" fill="#333"/><rect x="150" y="46" width="14" height="9" rx="3" fill="#E8FF47" opacity=".9"/></svg>
+          </div>
+          <div class="car-card-body">
+            <div class="car-card-type">SUV</div>
+            <div class="car-card-name">Hyundai Creta</div>
+            <div class="car-card-specs">
+              <span class="spec">⛽ Diesel</span>
+              <span class="spec">👥 7 Seats</span>
+              <span class="spec">❄️ AC</span>
+              <span class="spec">🔄 Auto</span>
+            </div>
+            <div class="car-card-footer">
+              <div class="price-tag">₹1,499 <span>/ day</span></div>
+              <button class="btn btn-primary" style="padding:8px 18px;font-size:.78rem;" data-page="contact">Book</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose -->
+  <section class="why-section">
+    <div class="container">
+      <div class="why-grid">
+        <div>
+          <span class="tag" style="color:rgba(232,255,71,.6)">Why DriveEasy</span>
+          <h2 class="section-title" style="color:#fff; margin-top:12px;">
+            Designed Around<br>Your Freedom
+          </h2>
+          <p style="color:rgba(255,255,255,.5);line-height:1.8;margin-top:16px;font-size:.95rem;">
+            We built DriveEasy for people who want the convenience of car ownership without the commitment. Every touchpoint — from booking to return — is crafted to respect your time.
+          </p>
+          <button class="btn btn-primary" style="margin-top:28px;" data-page="about">Our Story →</button>
+        </div>
+        <div class="why-features">
+          <div class="why-feat"><div class="feat-icon">⚡</div><div class="feat-title">Instant Booking</div><div class="feat-desc">Reserve any car in under 2 minutes via app or web.</div></div>
+          <div class="why-feat"><div class="feat-icon">🛡️</div><div class="feat-title">Full Insurance</div><div class="feat-desc">Every ride covered with comprehensive zero-deductible insurance.</div></div>
+          <div class="why-feat"><div class="feat-icon">📍</div><div class="feat-title">50+ Locations</div><div class="feat-desc">Pick up and drop off at airports, stations, and hubs city-wide.</div></div>
+          <div class="why-feat"><div class="feat-icon">🔧</div><div class="feat-title">24/7 Roadside Help</div><div class="feat-desc">Emergency support wherever you are, any hour, any day.</div></div>
+          <div class="why-feat"><div class="feat-icon">💳</div><div class="feat-title">Transparent Pricing</div><div class="feat-desc">No hidden charges — what you see is exactly what you pay.</div></div>
+          <div class="why-feat"><div class="feat-icon">🌿</div><div class="feat-title">EV Options</div><div class="feat-desc">Choose from our growing fleet of electric vehicles.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="testimonials">
+    <div class="container">
+      <span class="tag">Customer Reviews</span>
+      <h2 class="section-title" style="margin-top:8px; max-width:460px;">Loved by Thousands of Drivers</h2>
+      <div class="test-grid">
+        <div class="test-card">
+          <div class="stars">★★★★★</div>
+          <p class="test-quote">"Booked a Creta for a Goa road trip — the process was seamless, car was spotless, and the price was way better than Zoomcar. Highly recommend!"</p>
+          <div class="test-author"><div class="avatar" style="background:#6C63FF">AK</div><div><div class="author-name">Arjun Kapoor</div><div class="author-loc">Mumbai → Goa</div></div></div>
+        </div>
+        <div class="test-card">
+          <div class="stars">★★★★★</div>
+          <p class="test-quote">"Used DriveEasy for a month-long work assignment in Pune. The weekly rate was incredibly fair and the car was always clean and well-maintained."</p>
+          <div class="test-author"><div class="avatar" style="background:#E8683A">PS</div><div><div class="author-name">Priya Sharma</div><div class="author-loc">Pune, Work Travel</div></div></div>
+        </div>
+        <div class="test-card">
+          <div class="stars">★★★★☆</div>
+          <p class="test-quote">"First time using self-drive rental — the app guided me through everything. Picked up from BOM airport, drove straight to the hotel. Zero stress."</p>
+          <div class="test-author"><div class="avatar" style="background:#4ECDC4">RN</div><div><div class="author-name">Ravi Nair</div><div class="author-loc">BOM Airport Pickup</div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Banner -->
+  <section class="cta-banner">
+    <div class="container cta-inner">
+      <div class="cta-text">
+        <h2>Ready to Hit the Road?</h2>
+        <p>First rental? Use code <strong>FIRST200</strong> for ₹200 off your first booking.</p>
+      </div>
+      <button class="btn btn-dark" data-page="services">Book Your Car Now →</button>
+    </div>
+  </section>
+</div>
+
+
+<!-- ═══════════════════ PAGE: SERVICES ═══════════════════ -->
+<div class="page" id="page-services">
+  <div class="page-hero">
+    <div class="container">
+      <span class="tag" style="color:rgba(232,255,71,.6); margin-bottom:12px; display:block;">Our Offerings</span>
+      <h1>Drive Any Car,<br>Any Duration</h1>
+      <p>Hourly to monthly rentals, hatchbacks to luxury — every need covered with transparent pricing.</p>
+    </div>
+  </div>
+
+  <!-- Services Grid -->
+  <section class="services-section">
+    <div class="container">
+      <span class="tag">Rental Plans</span>
+      <h2 class="section-title" style="margin-top:8px;">Choose Your Plan</h2>
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon">⏱️</div>
+          <div class="service-title">Hourly Rental</div>
+          <div class="service-desc">Perfect for quick errands, airport pickups, or short day trips within the city. Minimum 4 hours, billed per hour with transparent rates.</div>
+          <div class="service-price">₹199 <span>/ hour onwards</span></div>
+          <button class="btn btn-dark" style="margin-top:20px; width:100%;" data-page="contact">Book Now</button>
+        </div>
+        <div class="service-card" style="border-color:var(--asphalt);">
+          <div style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--velocity); color:var(--ink); font-size:.72rem; font-weight:700; padding:4px 14px; border-radius:20px; white-space:nowrap;">MOST POPULAR</div>
+          <div class="service-icon" style="background:var(--velocity);">📅</div>
+          <div class="service-title">Daily Rental</div>
+          <div class="service-desc">The most flexible option for day trips, weekend getaways, or whenever you need a car for a full day. Includes 250 km free per day.</div>
+          <div class="service-price">₹599 <span>/ day onwards</span></div>
+          <button class="btn btn-primary" style="margin-top:20px; width:100%;" data-page="contact">Book Now</button>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">📆</div>
+          <div class="service-title">Monthly Rental</div>
+          <div class="service-desc">Ideal for relocations, work projects, or replacing your vehicle temporarily. Get the best rates with unlimited kilometres and home delivery.</div>
+          <div class="service-price">₹9,999 <span>/ month onwards</span></div>
+          <button class="btn btn-dark" style="margin-top:20px; width:100%;" data-page="contact">Book Now</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Full Fleet -->
+  <section class="fleet-full">
+    <div class="container">
+      <span class="tag">Full Fleet</span>
+      <h2 class="section-title" style="margin-top:8px;">200+ Cars to Choose From</h2>
+      <div class="fleet-full-grid">
+        <div class="fleet-row-card"><div class="fleet-row-img">🚗</div><div class="fleet-row-info"><div class="fleet-row-name">Maruti Swift</div><div class="fleet-row-meta">Hatchback · 5 Seats · Petrol · Manual</div></div><div class="fleet-row-price">₹599<span>per day</span></div></div>
+        <div class="fleet-row-card"><div class="fleet-row-img">🚙</div><div class="fleet-row-info"><div class="fleet-row-name">Honda City</div><div class="fleet-row-meta">Sedan · 5 Seats · Petrol · Auto</div></div><div class="fleet-row-price">₹999<span>per day</span></div></div>
+        <div class="fleet-row-card"><div class="fleet-row-img">🛻</div><div class="fleet-row-info"><div class="fleet-row-name">Hyundai Creta</div><div class="fleet-row-meta">SUV · 7 Seats · Diesel · Auto</div></div><div class="fleet-row-price">₹1,499<span>per day</span></div></div>
+        <div class="fleet-row-card"><div class="fleet-row-img">🚐</div><div class="fleet-row-info"><div class="fleet-row-name">Toyota Innova</div><div class="fleet-row-meta">MUV · 8 Seats · Diesel · Manual</div></div><div class="fleet-row-price">₹1,899<span>per day</span></div></div>
+        <div class="fleet-row-card"><div class="fleet-row-img">⚡</div><div class="fleet-row-info"><div class="fleet-row-name">Tata Nexon EV</div><div class="fleet-row-meta">EV SUV · 5 Seats · Electric</div></div><div class="fleet-row-price">₹1,299<span>per day</span></div></div>
+        <div class="fleet-row-card"><div class="fleet-row-img">💎</div><div class="fleet-row-info"><div class="fleet-row-name">BMW 5 Series</div><div class="fleet-row-meta">Luxury Sedan · 5 Seats · Petrol</div></div><div class="fleet-row-price">₹4,999<span>per day</span></div></div>
+        <div class="fleet-row-card"><div class="fleet-row-img">🚘</div><div class="fleet-row-info"><div class="fleet-row-name">Maruti Brezza</div><div class="fleet-row-meta">Compact SUV · 5 Seats · Petrol</div></div><div class="fleet-row-price">₹1,199<span>per day</span></div></div>
+        <div class="fleet-row-card"><div class="fleet-row-img">🏎️</div><div class="fleet-row-info"><div class="fleet-row-name">Ford Mustang</div><div class="fleet-row-meta">Sports · 4 Seats · Petrol · Auto</div></div><div class="fleet-row-price">₹6,499<span>per day</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Add-ons -->
+  <section class="addons-section">
+    <div class="container">
+      <span class="tag">Extras</span>
+      <h2 class="section-title" style="margin-top:8px;">Optional Add-Ons</h2>
+      <div class="addons-grid">
+        <div class="addon-card"><div class="addon-emoji">🛡️</div><div class="addon-name">Zero Deductible</div><div class="addon-lbl">₹149/day</div></div>
+        <div class="addon-card"><div class="addon-emoji">👶</div><div class="addon-name">Baby Seat</div><div class="addon-lbl">₹99/day</div></div>
+        <div class="addon-card"><div class="addon-emoji">🗺️</div><div class="addon-name">GPS Navigator</div><div class="addon-lbl">₹79/day</div></div>
+        <div class="addon-card"><div class="addon-emoji">⛽</div><div class="addon-name">Full-Tank Swap</div><div class="addon-lbl">₹199 flat</div></div>
+        <div class="addon-card"><div class="addon-emoji">🚗</div><div class="addon-name">Home Delivery</div><div class="addon-lbl">₹299 flat</div></div>
+        <div class="addon-card"><div class="addon-emoji">🔋</div><div class="addon-name">EV Charger Kit</div><div class="addon-lbl">₹129/day</div></div>
+        <div class="addon-card"><div class="addon-emoji">📶</div><div class="addon-name">Wi-Fi Hotspot</div><div class="addon-lbl">₹99/day</div></div>
+        <div class="addon-card"><div class="addon-emoji">🏔️</div><div class="addon-name">Roof Carrier</div><div class="addon-lbl">₹199/day</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-banner">
+    <div class="container cta-inner">
+      <div class="cta-text">
+        <h2>Need Help Choosing?</h2>
+        <p>Our team can help match you with the perfect vehicle for your trip.</p>
+      </div>
+      <button class="btn btn-dark" data-page="contact">Talk to Us →</button>
+    </div>
+  </section>
+</div>
+
+
+<!-- ═══════════════════ PAGE: ABOUT US ═══════════════════ -->
+<div class="page" id="page-about">
+  <div class="page-hero">
+    <div class="container">
+      <span class="tag" style="color:rgba(232,255,71,.6); margin-bottom:12px; display:block;">Our Story</span>
+      <h1>Born from a<br>Road Trip Gone Wrong</h1>
+      <p>We couldn't find a trustworthy car rental in 2016. So we built one ourselves.</p>
+    </div>
+  </div>
+
+  <!-- About Intro -->
+  <section style="padding:0 0 0;">
+    <div class="container">
+      <div class="about-intro">
+        <div class="about-img-block">
+          <div class="about-big-text">10</div>
+          <div class="about-year-badge">
+            <div class="yr">2016</div>
+            <div class="lbl">Founded</div>
+          </div>
+          <svg width="280" height="160" viewBox="0 0 280 160" fill="none" style="z-index:1;"><ellipse cx="140" cy="140" rx="100" ry="12" fill="rgba(0,0,0,.3)"/><rect x="40" y="88" width="200" height="48" rx="10" fill="#3a54a8"/><path d="M80 88 L100 42 Q140 28 180 42 L200 88Z" fill="#4462c0"/><path d="M97 86 L110 48 Q140 36 170 48 L183 86Z" fill="rgba(190,215,255,0.3)"/><circle cx="76" cy="122" r="22" fill="#1a1a2e" stroke="#334" stroke-width="3"/><circle cx="76" cy="122" r="11" fill="#2d2d40"/><circle cx="204" cy="122" r="22" fill="#1a1a2e" stroke="#334" stroke-width="3"/><circle cx="204" cy="122" r="11" fill="#2d2d40"/><rect x="220" y="96" width="18" height="11" rx="3" fill="#E8FF47" opacity=".9"/></svg>
+        </div>
+        <div class="about-copy">
+          <span class="tag">Who We Are</span>
+          <h2>India's Most Trusted Self-Drive Car Rental Platform</h2>
+          <p>DriveEasy was founded in Mumbai in 2016 after our co-founders experienced a disastrous rental that left them stranded on NH48 with no customer support and a car that hadn't been maintained in months.</p>
+          <p>We set out to fix three things: car quality, transparent pricing, and genuine 24/7 support. Ten years and 200+ cars later, we serve 18,000+ customers across 50 Indian cities.</p>
+          <p>Our mission is simple — give everyone the freedom to drive, without the headache of ownership.</p>
+          <button class="btn btn-primary" style="margin-top: 16px;" data-page="contact">Get in Touch</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values -->
+  <section class="values-section">
+    <div class="container">
+      <span class="tag" style="color:rgba(232,255,71,.6)">By the Numbers</span>
+      <h2 class="section-title" style="color:#fff; margin-top:8px;">A Decade of Driving India</h2>
+      <div class="values-grid">
+        <div class="value-card"><div class="value-num">200+</div><div class="value-title">Cars in Fleet</div><div class="value-desc">From budget hatchbacks to luxury sedans and EVs</div></div>
+        <div class="value-card"><div class="value-num">18k+</div><div class="value-title">Happy Renters</div><div class="value-desc">Verified customers across India with 4.8 avg rating</div></div>
+        <div class="value-card"><div class="value-num">50+</div><div class="value-title">Cities Covered</div><div class="value-desc">Pickup and drop points in every major metro</div></div>
+        <div class="value-card"><div class="value-num">99%</div><div class="value-title">Uptime Rate</div><div class="value-desc">Cars maintained to the highest service standards</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team -->
+  <section class="team-section">
+    <div class="container">
+      <span class="tag">Meet the Team</span>
+      <h2 class="section-title" style="margin-top:8px;">People Behind the Wheel</h2>
+      <div class="team-grid">
+        <div class="team-card"><div class="team-photo">👨‍💼</div><div class="team-info"><div class="team-name">Rohan Mehta</div><div class="team-role">Co-Founder & CEO</div></div></div>
+        <div class="team-card"><div class="team-photo">👩‍💼</div><div class="team-info"><div class="team-name">Ananya Joshi</div><div class="team-role">Co-Founder & COO</div></div></div>
+        <div class="team-card"><div class="team-photo">👨‍🔧</div><div class="team-info"><div class="team-name">Vikram Patel</div><div class="team-role">Head of Fleet Ops</div></div></div>
+        <div class="team-card"><div class="team-photo">👩‍💻</div><div class="team-info"><div class="team-name">Shreya Nair</div><div class="team-role">Chief Product Officer</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline -->
+  <section class="timeline-section">
+    <div class="container">
+      <div style="text-align:center; margin-bottom:0;">
+        <span class="tag">Our Journey</span>
+        <h2 class="section-title" style="margin-top:8px;">How We Got Here</h2>
+      </div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-content"><div class="tl-year">2016</div><div class="tl-title">The Idea Sparks</div><div class="tl-desc">Founded in a Bandra apartment with 5 cars and a shared spreadsheet for bookings.</div></div>
+          <div style="flex:1"></div>
+          <div class="tl-dot"></div>
+        </div>
+        <div class="tl-item">
+          <div style="flex:1"></div>
+          <div class="tl-content"><div class="tl-year">2018</div><div class="tl-title">First App Launched</div><div class="tl-desc">Replaced the spreadsheet with a proper mobile app, crossing 500 registered users in the first month.</div></div>
+          <div class="tl-dot"></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-content"><div class="tl-year">2020</div><div class="tl-title">Survived the Pandemic</div><div class="tl-desc">Pivoted to sanitized monthly rentals for healthcare workers — a decision that doubled our fleet.</div></div>
+          <div style="flex:1"></div>
+          <div class="tl-dot"></div>
+        </div>
+        <div class="tl-item">
+          <div style="flex:1"></div>
+          <div class="tl-content"><div class="tl-year">2022</div><div class="tl-title">EV Fleet Added</div><div class="tl-desc">Introduced 20 electric vehicles and partnered with Tata to build India's first EV-only rental tier.</div></div>
+          <div class="tl-dot"></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-content"><div class="tl-year">2026</div><div class="tl-title">50 Cities & Beyond</div><div class="tl-desc">Crossed 200+ cars, 50+ cities, and 18,000 customers. Expanding to Tier-2 cities next.</div></div>
+          <div style="flex:1"></div>
+          <div class="tl-dot"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-banner">
+    <div class="container cta-inner">
+      <div class="cta-text">
+        <h2>Join 18,000+ Happy Drivers</h2>
+        <p>Start your first DriveEasy rental today.</p>
+      </div>
+      <button class="btn btn-dark" data-page="services">Browse Cars →</button>
+    </div>
+  </section>
+</div>
+
+
+<!-- ═══════════════════ PAGE: CONTACT ═══════════════════ -->
+<div class="page" id="page-contact">
+  <div class="page-hero">
+    <div class="container">
+      <span class="tag" style="color:rgba(232,255,71,.6); margin-bottom:12px; display:block;">Reach Us</span>
+      <h1>We're Here<br>to Help You Drive</h1>
+      <p>Questions about booking, fleet, pricing, or anything else — reach out and we'll reply within 30 minutes.</p>
+    </div>
+  </div>
+
+  <!-- Contact Layout -->
+  <section>
+    <div class="container">
+      <div class="contact-layout">
+        <!-- Left: Info -->
+        <div class="contact-info">
+          <span class="tag">Contact Information</span>
+          <h2>Let's Talk Rentals</h2>
+          <p>Whether you're planning a road trip or need a car for your daily commute, our team is here to help you find the perfect match.</p>
+          <div class="contact-items">
+            <div class="c-item"><div class="c-icon">📞</div><div><div class="c-label">Phone</div><div class="c-value">+91 98200 00001</div><div class="c-sub">Mon–Sat, 8 AM – 9 PM IST</div></div></div>
+            <div class="c-item"><div class="c-icon">✉️</div><div><div class="c-label">Email</div><div class="c-value">hello@driveeasy.in</div><div class="c-sub">We reply within 30 minutes</div></div></div>
+            <div class="c-item"><div class="c-icon">📍</div><div><div class="c-label">Head Office</div><div class="c-value">DriveEasy HQ, BKC</div><div class="c-sub">G Block, Bandra Kurla Complex, Mumbai 400051</div></div></div>
+            <div class="c-item"><div class="c-icon">⏰</div><div><div class="c-label">Support Hours</div><div class="c-value">24 / 7 Roadside Assistance</div><div class="c-sub">Office support: 8 AM – 9 PM IST</div></div></div>
+          </div>
+          <div class="socials">
+            <button class="social-btn">📘</button>
+            <button class="social-btn">📸</button>
+            <button class="social-btn">🐦</button>
+            <button class="social-btn">💼</button>
+          </div>
+        </div>
+        <!-- Right: Form -->
+        <div class="contact-form">
+          <h3>Send Us a Message</h3>
+          <div class="form-row">
+            <div class="form-group"><label>First Name</label><input type="text" placeholder="Arjun"></div>
+            <div class="form-group"><label>Last Name</label><input type="text" placeholder="Kapoor"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Email</label><input type="email" placeholder="arjun@email.com"></div>
+            <div class="form-group"><label>Phone</label><input type="tel" placeholder="+91 98200 XXXXX"></div>
+          </div>
+          <div class="form-group">
+            <label>Subject</label>
+            <select>
+              <option>Booking Inquiry</option>
+              <option>Pricing & Plans</option>
+              <option>Fleet Information</option>
+              <option>Cancellation & Refund</option>
+              <option>Partnership / Corporate</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Pickup City</label>
+            <select>
+              <option>Mumbai</option><option>Delhi</option><option>Bangalore</option>
+              <option>Pune</option><option>Hyderabad</option><option>Chennai</option><option>Other</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Message</label><textarea rows="4" placeholder="Tell us about your trip, dates, and any special requirements..."></textarea></div>
+          <button class="btn btn-primary" style="width:100%;" id="formSubmit">Send Message →</button>
+          <div class="form-success" id="formSuccess">✅ Your message has been sent! We'll get back to you within 30 minutes.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Map -->
+  <section class="map-section">
+    <div class="container">
+      <span class="tag" style="margin-bottom:16px; display:block;">Find Us</span>
+      <div class="map-placeholder">
+        <div class="map-grid"></div>
+        <div class="map-pin">📍</div>
+        <div class="map-text">DriveEasy HQ — Bandra Kurla Complex, Mumbai</div>
+        <div class="map-sub">G Block, BKC, Mumbai 400051 · Near BKC Metro Station</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq-section">
+    <div class="container">
+      <div style="text-align:center; margin-bottom:0;">
+        <span class="tag">FAQ</span>
+        <h2 class="section-title" style="margin-top:8px;">Common Questions</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item">
+          <div class="faq-q">What documents do I need to rent a car? <span class="faq-icon">+</span></div>
+          <div class="faq-a">You need a valid Indian driving licence (at least 1 year old), an Aadhaar card or passport for ID verification, and a debit/credit card for the security deposit.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Is there a minimum age requirement? <span class="faq-icon">+</span></div>
+          <div class="faq-a">Yes. You must be at least 21 years old with a valid driving licence held for at least 1 year. For luxury and SUV categories, the minimum age is 23.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">What happens if I return the car late? <span class="faq-icon">+</span></div>
+          <div class="faq-a">Late returns are charged at 1.5× the hourly rate. You can extend your booking via the app any time before your return slot, subject to availability.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Is insurance included in the price? <span class="faq-icon">+</span></div>
+          <div class="faq-a">Yes — all our cars come with basic third-party insurance. You can upgrade to zero-deductible comprehensive coverage with our add-on for ₹149/day.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Can I drive the car outside my state? <span class="faq-icon">+</span></div>
+          <div class="faq-a">Yes, inter-state driving is allowed. Inform us at the time of booking — a small state permit fee may apply for some routes. Certain hill regions may require advance approval.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">How is the security deposit handled? <span class="faq-icon">+</span></div>
+          <div class="faq-a">A refundable security deposit of ₹2,000–₹10,000 (depending on car category) is blocked on your card at pickup and fully released within 3 business days after return.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">Drive<span>Easy</span></div>
+        <p>India's most trusted self-drive car rental service. Drive free, drive smart — wherever your road takes you.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <a href="#" data-page="home">Home</a>
+        <a href="#" data-page="services">Services</a>
+        <a href="#" data-page="about">About Us</a>
+        <a href="#" data-page="contact">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h4>Car Types</h4>
+        <a href="#" data-page="services">Hatchbacks</a>
+        <a href="#" data-page="services">Sedans</a>
+        <a href="#" data-page="services">SUVs & MUVs</a>
+        <a href="#" data-page="services">Electric Vehicles</a>
+        <a href="#" data-page="services">Luxury Cars</a>
+      </div>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <a href="#" data-page="contact">Help Center</a>
+        <a href="#" data-page="contact">Cancellation Policy</a>
+        <a href="#" data-page="contact">Insurance Info</a>
+        <a href="#" data-page="contact">Corporate Rentals</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 DriveEasy Pvt. Ltd. · Mumbai, India</p>
+      <div class="footer-badges">
+        <span class="badge">ISO 9001 Certified</span>
+        <span class="badge">SSL Secured</span>
+        <span class="badge">MSME Registered</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ─── PAGE NAVIGATION ───
+  function navigate(target) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + target)?.classList.add('active');
+    document.querySelectorAll('[data-page]').forEach(a => {
+      a.classList.toggle('active', a.dataset.page === target);
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    closeMobile();
+  }
+
+  document.querySelectorAll('[data-page]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.preventDefault();
+      navigate(el.dataset.page);
+    });
+  });
+
+  // ─── MOBILE MENU ───
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const mobileClose = document.getElementById('mobileClose');
+
+  hamburger.addEventListener('click', () => mobileMenu.classList.add('open'));
+  mobileClose.addEventListener('click', closeMobile);
+  function closeMobile() { mobileMenu.classList.remove('open'); }
+
+  // ─── FAQ ACCORDION ───
+  document.querySelectorAll('.faq-q').forEach(q => {
+    q.addEventListener('click', () => {
+      const item = q.closest('.faq-item');
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!wasOpen) item.classList.add('open');
+    });
+  });
+
+  // ─── CONTACT FORM ───
+  document.getElementById('formSubmit')?.addEventListener('click', () => {
+    const success = document.getElementById('formSuccess');
+    success.style.display = 'block';
+    setTimeout(() => { success.style.display = 'none'; }, 5000);
+  });
+
+  // ─── SET TODAY'S DATE DEFAULTS ───
+  const today = new Date().toISOString().split('T')[0];
+  const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+  document.querySelectorAll('input[type="date"]').forEach((inp, i) => {
+    inp.value = i === 0 ? today : tomorrow;
+    inp.min = today;
+  });
+
+  // ─── SCROLL REVEAL ANIMATION ───
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.car-card, .service-card, .test-card, .fleet-row-card, .value-card, .team-card, .addon-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity .5s ease, transform .5s ease';
+    observer.observe(el);
+  });
+
+  // Trigger for initial active page
+  const activePage = document.querySelector('.page.active');
+  if (activePage) {
+    activePage.querySelectorAll('.car-card, .service-card, .test-card').forEach(el => {
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    });
+  }
+</script>
+</body>
+</html>
